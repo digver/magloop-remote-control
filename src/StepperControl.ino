@@ -62,7 +62,7 @@
 // V14 LED - SLEEP
 //////////////////////////////////////////////
 
-char auth[] = "c5bd12bffe004d5597df53aa6ed60d38"; // Auth Token for "Magloop Control".
+char auth[] = "xxx_YOUR_AUTH_TOKEN_HERE_xxx"; // Auth Token for "Magloop Control".
 
 //////////////////////////////////////////////
 //
