@@ -1,3 +1,5 @@
+# File with personal data
+private_tokens.cpp
 .pioenvs
 .clang_complete
 .gcc-flags.json

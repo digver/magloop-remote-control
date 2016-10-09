@@ -1,12 +1,11 @@
 //////////////////////////////////////////////
 //
+// StepperControl.ino
+//
 // Control stepper motor with Blynk
 //
 // Blynk Project is called
 //   Magloop Control
-//
-//  The Stroboscope example did a lot to help get this working
-//  https://github.com/blynkkk/blynk-library/tree/master/examples/More/Stroboscope
 //
 
 // Arduino Uno R3 pin mapping
@@ -62,7 +61,8 @@
 // V14 LED - SLEEP
 //////////////////////////////////////////////
 
-char auth[] = "xxx_YOUR_AUTH_TOKEN_HERE_xxx"; // Auth Token for "Magloop Control".
+#include "private_tokens.h"
+extern char AUTH_TOKEN[]; // Auth Token for "Magloop Control".
 
 //////////////////////////////////////////////
 //
@@ -98,6 +98,12 @@ const int STP     = 5;  // Arduino --> step the motor
 const int DIR     = 6;  // Arduino --> motor direction
 const int SLEEP   = 3;   //  Arduino --> SLP = LOW power mode delay >= 1ms on waking
 
+#define BLYNK_GREEN     "#23C48E"
+#define BLYNK_BLUE      "#04C0F8"
+#define BLYNK_YELLOW    "#ED9D00"
+#define BLYNK_RED       "#D3435C"
+#define BLYNK_DARK_BLUE "#5F7CD8"
+
 // Set up some global variables
 int move;   // Seems like SimpleTimer need to be
 int sleep;  // declared up here, not in setup()
@@ -113,6 +119,7 @@ WidgetLED ledUp(V11);   //  direction is up
 WidgetLED ledDown(V12); //  direction is down
 WidgetLED ledSleep(V14); //
 int stepIntervalPin = 13; // Pin V13 for Value Widget
+WidgetLED ledDUMMY(V20); // test latency problems
 
 void setup()
 {
@@ -132,7 +139,7 @@ void setup()
   Serial.begin(9600);
 
   // Blynk.begin(auth, Serial); // Use for USB serial connection
-  Blynk.begin(auth, ble);
+  Blynk.begin(AUTH_TOKEN, ble);
   ble.begin(BLUEFRUIT_VERBOSE_MODE);
   ble.factoryReset(); // Optional
   ble.setMode(BLUEFRUIT_MODE_DATA);
@@ -145,6 +152,7 @@ void setup()
   ledDown.off();
   ledUp.on();
   ledSleep.off();
+  ledDUMMY.off();
 
   // Set up timers
   // setSerial(milliseconds, function)
@@ -207,12 +215,15 @@ BLYNK_WRITE(V0)
   {
     timer.enable(move);
     ledMove.on();
+    // Blynk.setProperty(V0, "color", BLYNK_YELLOW);
   }
   else
   {
     timer.disable(move);
     ledMove.off();
+    // Blynk.setProperty(V0, "color", "#990000");
   }
+  Blynk.setProperty(0, "color", BLYNK_YELLOW);
 }
 
 ////////////////////////////////////
