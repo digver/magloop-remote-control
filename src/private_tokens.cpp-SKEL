@@ -1,7 +1,0 @@
-// private_tokens.cpp-SKEL
-//
-// Rename to private_tokens.cpp and include in
-// .gitignore to prevent publishing sensitive data.
-
-// Edit for
-char AUTH_TOKEN[] = "YourAuthTokenFromBlynk";

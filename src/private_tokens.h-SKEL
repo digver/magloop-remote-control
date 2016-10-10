@@ -1,0 +1,9 @@
+/*
+private_tokens.h-SKEL
+
+* Rename to private_tokens.h
+* Add to .gitignore to prevent publishing sensitive data.
+
+*/
+
+#define AUTH_TOKEN "store-auth-token-here"

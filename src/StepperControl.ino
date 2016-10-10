@@ -62,7 +62,7 @@
 //////////////////////////////////////////////
 
 #include "private_tokens.h"
-extern char AUTH_TOKEN[]; // Auth Token for "Magloop Control".
+// extern char AUTH_TOKEN[]; // Auth Token for "Magloop Control".
 
 //////////////////////////////////////////////
 //
