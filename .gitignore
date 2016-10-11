@@ -1,8 +1,8 @@
-# File with personal data
-private_tokens.h
 .pioenvs
 .clang_complete
 .gcc-flags.json
+# File with personal data
+private_tokens.h
 # Compiled Object files
 *.slo
 *.lo
