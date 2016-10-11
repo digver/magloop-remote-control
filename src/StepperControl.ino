@@ -144,7 +144,7 @@ void setup()
   ble.factoryReset(); // Optional
   ble.setMode(BLUEFRUIT_MODE_DATA);
 
-  while (Blynk.connect() == false)
+  while (!Blynk.connect() && !ble.isConnected())
   {
      // Wait until connected
    }
@@ -167,20 +167,15 @@ void loop()
   timer.run();
 }
 
-//////////////////////////////////////////////////////////////
-//
-//  Functions below
-//
-//////////////////////////////////////////////////////////////
+/*
+ Functions below
+*/
 
+/////////////////////////////
 // motorTwoStep
 //
 // Toggle stepper motor state with each timer cycle
 // Two cycles of the time = one complete step of the motor
-// void motorStep()
-// {
-//   digitalWrite(STP, !digitalRead(STP));
-// }
 //
 // Yes, we're using a delay here but it's only 10 uSec
 void motorTwoStep()
@@ -193,8 +188,9 @@ void motorTwoStep()
 void intervalChange(int i)
 {
   // Change interval of step
-  BLYNK_LOG("Counter: %i - Interval: %i", stepsCounter, i);
+  // BLYNK_LOG("Counter: %i - Interval: %i", stepsCounter, i);
   Blynk.virtualWrite(stepIntervalPin, i);
+  ledDUMMY.on(); // Used to overcome latency problem
   bool wasEnabled = timer.isEnabled(move);
   timer.deleteTimer(move);
   move = timer.setInterval(i, motorTwoStep);
@@ -215,15 +211,17 @@ BLYNK_WRITE(V0)
   {
     timer.enable(move);
     ledMove.on();
-    // Blynk.setProperty(V0, "color", BLYNK_YELLOW);
+    Blynk.setProperty(V0, "color", BLYNK_YELLOW);
+    ledDUMMY.on(); // Used to overcome latency problem
   }
   else
   {
     timer.disable(move);
     ledMove.off();
-    // Blynk.setProperty(V0, "color", "#990000");
+    Blynk.setProperty(V0, "color", "#990000");
+    ledDUMMY.on(); // Used to overcome latency problem
   }
-  Blynk.setProperty(0, "color", BLYNK_YELLOW);
+  // Blynk.setProperty(0, "color", BLYNK_YELLOW);
 }
 
 ////////////////////////////////////
@@ -339,21 +337,23 @@ BLYNK_WRITE(V5)
   {
     // digitalWrite(SLEEP, !digitalRead(SLEEP));
     digitalWrite(SLEEP, HIGH);
-    ledSleep.on();
+    ledSleep.off();
+    ledDUMMY.on(); // Used to overcome latency problem
   }
   else
   {
     // digitalWrite(SLEEP, !digitalRead(SLEEP));
     digitalWrite(SLEEP, LOW);
-    ledSleep.off();
+    ledSleep.on();
+    ledDUMMY.on(); // Used to overcome latency problem
   }
 
-  if (digitalRead(SLEEP)) // HIGH = ready to go
-  {
-    ledSleep.off();
-  }
-  else if (!digitalRead(SLEEP)) // LOW == low power-mode
-  {
-    ledSleep.on();
-  }
+  // if (digitalRead(SLEEP)) // HIGH = ready to go
+  // {
+  //   ledSleep.off();
+  // }
+  // else if (!digitalRead(SLEEP)) // LOW == low power-mode
+  // {
+  //   ledSleep.on();
+  // }
 }
