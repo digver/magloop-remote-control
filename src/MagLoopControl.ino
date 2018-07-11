@@ -1,74 +1,68 @@
 /************************************************************************
-*  **Arduino Uno R3 pin mapping**
-*
-*  D0   <--> \n
-*  D1   <--> \n
-*  D2   <--> \n
-*  D3   <--> SLEEP  (RED) Big Easy Driver \n
-*  D4   <--> BLUEFRUIT_SPI_RST (via header pins) \n
-*  D5   <--> STP    (GRN) Big Easy Driver \n
-*  D6   <--> DIR    (YEL) Big Easy Driver \n
-*  D7   <-->  BLUEFRUIT_SPI_IRQ (via header pins) \n
-*  D8   <-->  BLUEFRUIT_SPI_CS (via header pins) \n
-*  D9   <--> \n
-*  D10  <--> \n
-*  D11  <-->  (pin shared with SPI_MOSI via jumper) \n
-*  D12  <-->  (pin shared with SPI_MISO via jumper) \n
-*  D13  <-->  (pin shared with SPI_SCK via jumper) \n
-*  GND  <--> \n
-*  AREF <--> \n
-*  D18  <--> \n
-*  D19  <--> \n
-*
-*  A0   <--> \n
-*  A1   <--> \n
-*  A2   <--> \n
-*  A3   <--> \n
-*  A4   <--> \n
-*  A5   <--> \n
-*
-*  GND  <--> GND    (BLK) Big Easy Driver
-*
-*  **ISP 2x3 Connector on Red Board**
-*
-*  D11  <-->  (BLUEFRUIT_SPI_MOSI with jumper on board) \n
-*  D12  <-->  (BLUEFRUIT_SPI_MISO with jumper on board) \n
-*  D13  <-->  (BLUEFRUIT_SPI_SCK with jumper on board)
-*
-*  **Inventory the Blynk Virtual Pins**
-*
-* V0 Button - switch, Move \n
-* V1 Button - switch, Direction \n
-* V2 Button - push, Slew, motor set amount \n
-* V3 Button - push, Nudge Down \n
-* V4 Button - push, Nudge Up \n
-* V5 Button - switch, SLEEP \n
-* V6 Button - push, Speed SLOWER \n
-* V7 Button - push, Speed FASTER \n
-* V8 Value  - capPosition - current position of motor
-* V9 \n
-* V10 LED - motor is MOVING \n
-* V11 LED - direction is UP \n
-* V12 LED - direction is DOWN \n
-* V13 Value - intervalIndexPin \n
-* V14 LED - SLEEP \n
-* V15 Button - Set Zero capacitor position
-*
+    **Arduino Uno R3 pin mapping**
+
+    D0   <--> \n
+    D1   <--> \n
+    D2   <--> \n
+    D3   <--> SLEEP  (RED) Big Easy Driver \n
+    D4   <--> BLUEFRUIT_SPI_RST (via header pins) \n
+    D5   <--> STP    (GRN) Big Easy Driver \n
+    D6   <--> DIR    (YEL) Big Easy Driver \n
+    D7   <-->  BLUEFRUIT_SPI_IRQ (via header pins) \n
+    D8   <-->  BLUEFRUIT_SPI_CS (via header pins) \n
+    D9   <--> \n
+    D10  <--> \n
+    D11  <-->  (pin shared with SPI_MOSI via jumper) \n
+    D12  <-->  (pin shared with SPI_MISO via jumper) \n
+    D13  <-->  (pin shared with SPI_SCK via jumper) \n
+    GND  <--> \n
+    AREF <--> \n
+    D18  <--> \n
+    D19  <--> \n
+
+    A0   <--> \n
+    A1   <--> \n
+    A2   <--> \n
+    A3   <--> \n
+    A4   <--> \n
+    A5   <--> \n
+
+    GND  <--> GND    (BLK) Big Easy Driver
+
+    **ISP 2x3 Connector on Red Board**
+
+    D11  <-->  (BLUEFRUIT_SPI_MOSI with jumper on board) \n
+    D12  <-->  (BLUEFRUIT_SPI_MISO with jumper on board) \n
+    D13  <-->  (BLUEFRUIT_SPI_SCK with jumper on board)
+
+    **Inventory the Blynk Virtual Pins**
+
+    V0 Button - switch, Move \n
+    V1 Button - switch, Direction \n
+    V2 Button - push, Slew, motor set amount \n
+    V3 Button - push, Nudge Down \n
+    V4 Button - push, Nudge Up \n
+    V5 Button - switch, SLEEP \n
+    V6 Button - push, Speed SLOWER \n
+    V7 Button - push, Speed FASTER \n
+    V8 Value  - capPosition - current position of motor
+    V9 \n
+    V10 LED - motor is MOVING \n
+    V11 LED - direction is UP \n
+    V12 LED - direction is DOWN \n
+    V13 Value - intervalIndexPin \n
+    V14 LED - SLEEP \n
+    V15 Button - Set Zero capacitor position
+
 *************************************************************************/
 #define DEBUG
 
 #include "private_tokens.h" // Store AUTH_TOKEN outside of the sketch
-#include "StepperControl.h"
-
-// #define BLYNK_USE_DIRECT_CONNECT
-
-///////////////////////////////
-//
-// BLERG These lines need to be at the top of the sketch!
-//
+// #include "StepperControl.h"
 
 #ifdef DEBUG
   #include <SoftwareSerial.h>
+  // BLERG BLYNK_PRINT needs to be at the top of the sketch!
   #define BLYNK_PRINT Serial
   // #define BLYNK_DEBUG        // Mor detailed prints
 #endif
@@ -98,16 +92,16 @@ SimpleTimer timer; // Use simple time since I had trouble writing my own
 Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
 
 // Local Constants
-const int STP     = 5;  /*  Pin to stepper driver to step the motor */
-const int DIR     = 6;  /*  Pin to stepper driver to set motor direction */
-const int SLEEP   = 3;  /*  Pin to stepper driver for LOW power.
-                            mode delay >= 1ms on waking */
+const int STP     = 5;  //  Pin to stepper driver to step the motor
+const int DIR     = 6;  //  Pin to stepper driver to set motor direction
+const int SLEEP   = 3;  //  Pin to stepper driver for LOW power.
+                        //  mode delay >= 1ms on waking
 
 // Used to slew and determine current position of the capacitor in
 // number of microsteps
-const int CAP_MIN  = 0;  //< Position of capacitor at its lowest position
-const int CAP_MAX  = 4600; //< Position of capacitor at its highest postion
-int capPosition; // Holds the current position of the capacitor
+const int CAP_MIN  = 0;     //< Position of capacitor at its lowest position
+const int CAP_MAX  = 4600;  //< Position of capacitor at its highest postion
+int capPosition;            // Holds the current position of the capacitor
 
 #define BLYNK_GREEN     "#23C48E"
 #define BLYNK_BLUE      "#04C0F8"
@@ -124,21 +118,20 @@ int sleep;    // declared up here, not in setup()
 int interval; // interval between each motor step
 
 
-const int INTERVAL_MAX = 10; // Define the number of possible motor speeds
-int intervalIndex = 2;    //  Default and current index of the intervalArray
-
+const int INTERVAL_MAX = 10;  // Define the number of possible motor speeds
+int intervalIndex = 2;        //  Index for intervalArray[]
 
 // Set up an array of possible intervals between each motor step
 int intervalArray[INTERVAL_MAX] = {1000, 500, 200, 100, 50, 20, 10, 4, 2, 1};
 
 // Set up some Blynk virtual LEDs
-WidgetLED ledMove(V10);   //<  Energized if motor is moving
-WidgetLED ledUp(V11);     //<  Energized if motordirection is up
-WidgetLED ledDown(V12);   //<  Energized if motor direction is down
-WidgetLED ledSleep(V14);  //<  Energized if motor is sleeping
-int intervalIndexPin = 13; //< Pin V13 for Value Widget
-int capPositionPin   = 8;  //< Send posiion to app
-WidgetLED ledDUMMY(V20);  //< test latency problems
+WidgetLED ledMove(V10);     //  Energized if motor is moving
+WidgetLED ledUp(V11);       //  Energized if motordirection is up
+WidgetLED ledDown(V12);     //  Energized if motor direction is down
+WidgetLED ledSleep(V14);    //  Energized if motor is sleeping
+int intervalIndexPin = 13;  //  Pin V13 for Value Widget
+int capPositionPin   = 8;   //  Send posiion to app
+WidgetLED ledDUMMY(V20);    //  test latency problems
 
 
 /***********************************************************************
@@ -149,7 +142,7 @@ WidgetLED ledDUMMY(V20);  //< test latency problems
 
 void setup() {
 
-  /** Initialize Arduino pins  for Big Easy Driver */
+  //* Initialize Arduino pins  for Big Easy Driver
   pinMode(STP, OUTPUT);
   pinMode(DIR, OUTPUT);
   pinMode(SLEEP, OUTPUT);
@@ -171,11 +164,11 @@ void setup() {
     #endif
    }
 
-   /** Set state for  Big Easy Driver */
+   //* Set state for  Big Easy Driver
    digitalWrite(STP, LOW);
-   digitalWrite(DIR, HIGH);  /*  HIGH == Increase Resonate freq  */
-   digitalWrite(SLEEP, LOW); /*  HIGH  = DEFAULT = energized
-                                 LOW   = SLEEP   = disable all */
+   digitalWrite(DIR, HIGH);   //  HIGH == Increase Resonate freq
+   digitalWrite(SLEEP, LOW);  //  HIGH  = DEFAULT = energized
+                              //  LOW   = SLEEP   = disable all
   // setState();
 
   // Set up timers
@@ -215,23 +208,23 @@ void setState() {
     Serial.println( F( "Enter setState()" ) );
   #endif
 
-  /* V0 Move Button */
+  // V0 Move Button
   Blynk.virtualWrite(V0, 0);
   // Blynk.setProperty(V0, "onBackColor", BLYNK_GRAY);
   Blynk.setProperty(V0, "offBackColor", BLYNK_GRAY);
   ledMove.off();
 
-  /* V5 SLEEP Button */
+  // V5 SLEEP Button
   Blynk.virtualWrite(V5, 0);
   // Blynk.setProperty(V0, "onBackColor", BLYNK_GREEN);
   Blynk.setProperty(V0, "offBackColor", BLYNK_RED);
   ledSleep.on();
 
+  Blynk.virtualWrite(V13, intervalIndex);
   // ledDown.off();
   // ledUp.off();
   // ledMove.off();
   // ledSleep.off();
-  Blynk.virtualWrite(V13, intervalIndex);
   // ledDUMMY.off();
   // Blynk.syncAll();
 
@@ -289,11 +282,11 @@ int testCapEnd () {
   // #endif
 
   if ( capPosition == CAP_MIN ) {
-    /* CAP_MIN = least capacitance */
+    // CAP_MIN = least capacitance
     return 0;
   }
   else if ( capPosition ==  CAP_MAX ) {
-    /* CAP_MAX = greatest capacitance */
+    // CAP_MAX = greatest capacitance
     return 1;
   }
   else {
@@ -367,20 +360,22 @@ void setDirection (bool dirNew) {
 
 
 /*****************************************
-*
-* START / STOP MOTOR
-*
-* Called by BLYNK_READ(V0)
-*
-* x = param.asInit()
-*   = 0 = STOP
-*   = 1 = MOVE
-*
-* SLEEP = LOW   = 0
-*       = HIGH  = 1, Energized
-*/
+
+ START / STOP MOTOR
+
+ Called by BLYNK_READ(V0)
+
+****************************************/
 
 bool startStopMotor(bool x = 0) {
+  /*******************************
+    x = param.asInit()
+      = 0 = STOP
+      = 1 = MOVE
+
+    SLEEP = LOW   = 0
+          = HIGH  = 1, Energized
+  *******************************/
   #ifdef DEBUG
     Serial.println( F("Enter startStopMotor().") );
     // Serial.print( F("Cap state is:") );
@@ -398,12 +393,12 @@ bool startStopMotor(bool x = 0) {
       Serial.println( F("START moving the motor.") );
     #endif
 
-    /* moveMotor calls stepMotor() */
+    // moveMotor calls stepMotor()
     timer.enable(moveMotor);
     timer.enable(printPosTimer);
 
-    /*  Send state to Blynk app */
-    /*  V0 - MOVE button */
+    //  Send state to Blynk app
+    //  V0 - MOVE button
     Blynk.virtualWrite(V0, 1 );
     Blynk.setProperty(V0, "color", BLYNK_GREEN);
     ledMove.on();
@@ -422,7 +417,7 @@ bool startStopMotor(bool x = 0) {
 
     ledMove.off();
 
-    /*  V0 - MOVE button */
+    //  V0 - MOVE button
     Blynk.virtualWrite(V0, 0 );
     Blynk.setProperty(V0, "color", BLYNK_GRAY);
 
@@ -461,14 +456,14 @@ void changeDirAtEnd () {
 
 
 /*********************************************
-*
-* STEP MOTOR
-*
-* Toggle stepper motor state with each timer cycle
-* Two cycles of the time = one complete step of the motor
-*
-* Stop the mptor if it reaches the end
-*
+
+  STEP MOTOR
+
+  Toggle stepper motor state with each timer cycle
+  Two cycles of the time = one complete step of the motor
+
+  Stop the mptor if it reaches the end
+
 */
 
 void stepMotor() {
@@ -481,7 +476,7 @@ void stepMotor() {
       ) {
 
     digitalWrite(STP, !digitalRead(STP));
-    /** Yes, we're using a delay here but it's only 10 uSec */
+    //* Yes, we're using a delay here but it's only 10 uSec
     delayMicroseconds(10);
     digitalWrite(STP, !digitalRead(STP));
     updateCapPosition();
@@ -540,29 +535,15 @@ void changeInterval(bool x) {
 }
 
 
-// void changeInterval(int i) {
-//
-//   Blynk.virtualWrite(intervalIndexPin, i);
-//   ledDUMMY.on(); // Used to overcome latency problem
-//   bool wasEnabled = timer.isEnabled(moveMotor);
-//   timer.deleteTimer(moveMotor);
-//   moveMotor = timer.setInterval(i, stepMotor);
-//   if (!wasEnabled)
-//   {
-//     timer.disable(moveMotor);
-//   }
-// }
-
-
 /************************************
-*
-* SLEW MOTOR
-*
-*  Slew the motor a set amount at the indicated speed
-*
-* i = milliseconds between each step
-* x = number of steps to take
-*
+
+    SLEW MOTOR
+
+    Slew the motor a set amount at the indicated speed
+
+    i = milliseconds between each step
+    x = number of steps to take
+
 */
 
 void motorSlew(int i, int x) {
@@ -606,7 +587,7 @@ BLYNK_WRITE(V0) {
     Serial.println( F("App event: V0 MOVE button") );
   #endif
 
-  /* Remember 1 = Energized */
+  // Remember 1 = Energized
   if ( !digitalRead(SLEEP) ) {
     #ifdef DEBUG
       Serial.println( F("Don't MOVE, I'm sleeping.") );
@@ -693,16 +674,6 @@ BLYNK_WRITE(V6) {
   }
 }
 
-// BLYNK_WRITE(V6) {
-//   #ifdef DEBUG
-//     Serial.println( F("App event: V6 SLOWER INTERVAL button") );
-//   #endif
-//
-//   if (param.asInt() && intervalIndex > 0)
-//   {
-//     changeInterval(intervalArray[--intervalIndex]);
-//   }
-// }
 
 /********************************************
 *
@@ -722,18 +693,6 @@ BLYNK_WRITE(V7) {
     changeInterval( 1 );
   }
 }
-
-
-// BLYNK_WRITE(V7) {
-//   #ifdef DEBUG
-//     Serial.println( F("App event: V7 FASTER INTERVAL button") );
-//   #endif
-//
-//   if (param.asInt() && intervalIndex < INTERVAL_MAX - 1)
-//   {
-//     changeInterval(intervalArray[++intervalIndex]);
-//   }
-// }
 
 
 /********************************************
@@ -816,7 +775,9 @@ BLYNK_WRITE(V15) {
 * V2
 * Button widget
 * slew motor a set amount
-**************************************/
+*
+*/
+
 BLYNK_WRITE(V2) {
   #ifdef DEBUG
     Serial.println( F("App event: V2 SLEW") );
@@ -830,15 +791,14 @@ BLYNK_WRITE(V2) {
   }
 }
 
-///////////////////////
-// V5 -- SLEEP
-// Button widget LOW (on) will put motor to SLEEP
-//
-// Big Easy Driver SLEEP pin is HIGH as DEFAULT
-// HIGH == awake, energized ready to go
-// Low == SLEEP low power-mode
-//
+/************************************************
+  V5 -- SLEEP
+  Button widget LOW (on) will put motor to SLEEP
 
+  Big Easy Driver SLEEP pin is HIGH as DEFAULT
+  HIGH == awake, energized ready to go
+  Low == SLEEP low power-mode
+*/
 
 BLYNK_WRITE(V5) {
   #ifdef DEBUG
@@ -847,7 +807,7 @@ BLYNK_WRITE(V5) {
     Serial.println( param.asInt() );
   #endif
 
-  /* Energize if (param == 1 and SLEEP == LOW ) */
+  // Energize if (param == 1 and SLEEP == LOW )
   if (param.asInt() && !digitalRead(SLEEP)) {
     digitalWrite(SLEEP, HIGH);
     ledSleep.off();
@@ -857,7 +817,7 @@ BLYNK_WRITE(V5) {
 
     ledDUMMY.on(); // Used to overcome latency problem
   }
-  /* Go to Sleep if (param == 0 and SLEEP == HIGH ) */
+  // Go to Sleep if (param == 0 and SLEEP == HIGH )
   else if (!param.asInt() && digitalRead(SLEEP))
   {
     if (timer.isEnabled(moveMotor))
