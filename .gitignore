@@ -28,3 +28,6 @@ private_tokens.h
 *.out
 *.app
 .piolibdeps
+.directory
+doxyfile
+html
